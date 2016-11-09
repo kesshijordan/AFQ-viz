@@ -142,7 +142,7 @@ function init() {
     //example: Unc 0 and 1; IFOF 2 and 4
     //example: Arc  3, 4, 5ish
 	var bundleIdx = 0;
-    $.getJSON("data/tier_1_4.json", function(json) {
+    $.getJSON("data/tier_1_0.json", function(json) {
         for (var key in json) {
             if (json.hasOwnProperty(key)) {
                 var oneBundle = json[key];
@@ -229,6 +229,24 @@ function init() {
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.addEventListener('change', lightUpdate);
 }
+
+//function to send a json object to the server from the client
+function onFinerButton() {
+	var myObject = { "my_key": "my_value" };
+
+	$.ajax({
+		type: "POST",
+		url: "/generate",
+		data: JSON.stringify(myObject),
+		contentType: 'application/json',
+		dataType: 'json',
+		error: function() {
+			alert("error");
+		},
+		success: function(data) {
+			console.log("success", data);
+		}
+	});}
 
 function onWindowResize() {
     var Width = container.clientWidth;
