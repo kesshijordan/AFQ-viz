@@ -243,10 +243,44 @@ function onFinerButton() {
 		error: function() {
 			alert("error");
 		},
-		success: function(data) {
-			console.log("success", data);
-		}
-	});}
+		//success: function(data) {
+		//	console.log("success", data);
+		//}
+		success: function(json) {
+      /*  for (var key in json) {
+            if (json.hasOwnProperty(key)) {
+                var oneBundle = json[key];
+				var combined = new THREE.Geometry();
+
+                for (var subkey in oneBundle) {
+                    if (oneBundle.hasOwnProperty(subkey)) {
+						var geometry = new THREE.Geometry();
+                        var oneStreamLine = oneBundle[subkey];
+
+                        // draw this stream line in scene
+                        for (var i = 0; i < oneStreamLine.length - 1; i++) {
+                            geometry.vertices.push(new THREE.Vector3(oneStreamLine[i][0], oneStreamLine[i][1], oneStreamLine[i][2]));
+                            geometry.vertices.push(new THREE.Vector3(oneStreamLine[i+1][0], oneStreamLine[i+1][1], oneStreamLine[i+1][2]));
+                        }
+
+						var line = new THREE.LineSegments(geometry, line_material);
+
+						combined.merge(line.geometry, line.matrix);
+                    }
+                }
+				var bundleLine = new THREE.LineSegments(combined, line_material);
+				bundleLine.scale.set(0.05,0.05,0.05);
+
+				bundleLine.name = tracks[ bundleIdx ];
+				bundleLine.idx = bundleIdx;
+				++bundleIdx;
+
+                groups.add(bundleLine);
+            }
+        }
+			*/
+			console.log("success")
+}})}
 
 function onWindowResize() {
     var Width = container.clientWidth;
@@ -349,8 +383,12 @@ function mouseoverBundle(name) {
 }
 
 var $window = $(window),
-   $stickyEl = $('#statcontent'),
-   elTop = $stickyEl.offset().top;
+$stickyEl = $('#statcontent')
+$elTop = $stickyEl.offset() || {top: 0}
+$elTop = $elTop.top
+
+
+
 
 $window.scroll(function() {
     $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
