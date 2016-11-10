@@ -142,7 +142,7 @@ function init() {
     //example: Unc 0 and 1; IFOF 2 and 4
     //example: Arc  3, 4, 5ish
 	var bundleIdx = 0;
-    $.getJSON("data/testingslfcpy3.json", function(json) {
+    $.getJSON("data/testingslfcpy.json", function(json) {
         for (var key in json) {
             if (json.hasOwnProperty(key)) {
                 var oneBundle = json[key];
@@ -247,7 +247,7 @@ function onFinerButton() {
 		//	console.log("success", data);
 		//}
 		success: function(json) {
-        for (var key in json) {
+      /*  for (var key in json) {
             if (json.hasOwnProperty(key)) {
                 var oneBundle = json[key];
 				var combined = new THREE.Geometry();
@@ -278,8 +278,9 @@ function onFinerButton() {
                 groups.add(bundleLine);
             }
         }
-
-	});}
+			*/
+			console.log("success")
+}})}
 
 function onWindowResize() {
     var Width = container.clientWidth;
@@ -382,8 +383,12 @@ function mouseoverBundle(name) {
 }
 
 var $window = $(window),
-   $stickyEl = $('#statcontent'),
-   elTop = $stickyEl.offset().top;
+$stickyEl = $('#statcontent')
+$elTop = $stickyEl.offset() || {top: 0}
+$elTop = $elTop.top
+
+
+
 
 $window.scroll(function() {
     $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);

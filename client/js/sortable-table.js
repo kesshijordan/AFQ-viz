@@ -179,7 +179,8 @@ function table_mouseDown() {
 
 var $window = $(window),
    $stickyEl = $('#statcontent'),
-   elTop = $stickyEl.offset().top;
+   elTop = $stickyEl.offset() || {top: 0}
+   elTop = elTop.top;
 
 $window.scroll(function() {
     $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
