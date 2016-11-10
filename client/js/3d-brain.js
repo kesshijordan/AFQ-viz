@@ -142,7 +142,7 @@ function init() {
     //example: Unc 0 and 1; IFOF 2 and 4
     //example: Arc  3, 4, 5ish
 	var bundleIdx = 0;
-    $.getJSON("data/testingslfcpy.json", function(json) {
+    $.getJSON("data/testingslfcpy3.json", function(json) {
         for (var key in json) {
             if (json.hasOwnProperty(key)) {
                 var oneBundle = json[key];
@@ -243,9 +243,42 @@ function onFinerButton() {
 		error: function() {
 			alert("error");
 		},
-		success: function(data) {
-			console.log("success", data);
-		}
+		//success: function(data) {
+		//	console.log("success", data);
+		//}
+		success: function(json) {
+        for (var key in json) {
+            if (json.hasOwnProperty(key)) {
+                var oneBundle = json[key];
+				var combined = new THREE.Geometry();
+
+                for (var subkey in oneBundle) {
+                    if (oneBundle.hasOwnProperty(subkey)) {
+						var geometry = new THREE.Geometry();
+                        var oneStreamLine = oneBundle[subkey];
+
+                        // draw this stream line in scene
+                        for (var i = 0; i < oneStreamLine.length - 1; i++) {
+                            geometry.vertices.push(new THREE.Vector3(oneStreamLine[i][0], oneStreamLine[i][1], oneStreamLine[i][2]));
+                            geometry.vertices.push(new THREE.Vector3(oneStreamLine[i+1][0], oneStreamLine[i+1][1], oneStreamLine[i+1][2]));
+                        }
+
+						var line = new THREE.LineSegments(geometry, line_material);
+
+						combined.merge(line.geometry, line.matrix);
+                    }
+                }
+				var bundleLine = new THREE.LineSegments(combined, line_material);
+				bundleLine.scale.set(0.05,0.05,0.05);
+
+				bundleLine.name = tracks[ bundleIdx ];
+				bundleLine.idx = bundleIdx;
+				++bundleIdx;
+
+                groups.add(bundleLine);
+            }
+        }
+
 	});}
 
 function onWindowResize() {
