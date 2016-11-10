@@ -142,7 +142,7 @@ function init() {
     //example: Unc 0 and 1; IFOF 2 and 4
     //example: Arc  3, 4, 5ish
 	var bundleIdx = 0;
-    $.getJSON("data/testingslfcpy3.json", function(json) {
+    $.getJSON("data/testingslfcpy.json", function(json) {
         for (var key in json) {
             if (json.hasOwnProperty(key)) {
                 var oneBundle = json[key];

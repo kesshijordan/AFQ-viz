@@ -108,7 +108,7 @@ def savejson(clusters, savepath=None, bigclthr=5):
 
     # print (len(json_bundles))
     # finally, write this bundles set into external file
-    if not savepath == None:
+    if savepath is not None:
         with open(savepath, 'w') as outfile:
             json.dump(json_bundles, outfile)
     return json.dumps(json_bundles)
@@ -143,7 +143,7 @@ def loadtrkfile(trkfile):
     sls = [item[0] for item in trk]
     return sls
 
-def executeclustering(jsls, dist_metric=50, smcl=5):
+def executeclustering(jsls, dist_metric=50, smcl=20):
     sls = json.loads(jsls)
     csls = center_sls(sls)
     clusters = execute_qb(csls, dist_metric, smcl=5)
