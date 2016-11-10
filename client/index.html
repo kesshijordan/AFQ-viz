@@ -4,7 +4,7 @@
     <!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta charset="utf-8">
-    <title>Visualizing the human brain</title>
+    <title>Cluster Cleaning NHW 2016</title>
 
     <!-- FONT
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -19,28 +19,51 @@
 <body id="body">
 
     <div id="header">
-        <h1 style="color:white;">VISUALIZING THE HUMAN BRAIN</h1>
+        <h1 style="color:white;">NHW 2016 Cluster Cleaning</h1>
     </div>
-    <div class="titlebar">
-        <div id="title" class="col-2"><h2>FIBER BUNDLES</h2></div>
-        <div id="title" class="col-5"><h2></h2></div>
-        <div id="title" class="col-5"><h2>FIBER BUNDLE DETAILS</h2></div>
-    </div>
+
     <div class="col-7">
+
         <div class="col-4" id="tracklist">
-            <div id="selectAllBox"> <input type="checkbox" id="selectAllTracks"><br> <label for="selectAllTracks">All Tracks</label></div>
+            <div id="selectAllBox"> <input type="checkbox" id="selectAllTracks"><br> <label for="selectAllTracks">ALL CLUSTERS</label></div>
         </div>
+        <div class="col-4" id="tracklist">
+            <div id="selectAllBox"> <input type="checkbox" id="flipselectAllTracks"><br> <label for="flipselectAllTracks">TOGGLE CHOICE</label></div>
+        </div>
+
+        <div class="col-4" id="tracklist">
+            <div id="selectAllBox"> <input type="checkbox" id="hiderejectTracks"><br> <label for="hiderejectTracks">HIDE REJECTS</label></div>
+        </div>
+        <div>
+            <button type="button" onclick="onFinerButton()"> FINER </button>
+            <button type="button" onclick="showClusterresCoarser()"> COARSER </button>
+        <div/>
+        <div class="col-10" id="title">
+            <button type="button" onclick=document.getElementById('modelsaveconfirm').style.display='block'> __SAVE_FASCICLE MODEL__ </button>
+            <p id="modelsaveconfirm" style="display:none">__Fascicle model saved!</p>
+        </div>
+
         <div class="col-8">
             <div class="col-12" id="threejsbrain"></div>
             <div class="moveGUI"></div>
         </div>
+            <p>Special thanks to the Yeatman Lab for the viewer code!!</p>
 
-        <div id="table" class="col-12"><h2>SUBJECT METADATA</h2><br></div>
+            </div>
+
+        </div>
+
+
+
+        <!--<div class="col-10" id="myspecialtitle"<h2>Cluster Level = 50 mm</h2></div>-->
+
+
+        <div id="table" class="col-5"><h2>Fascicle Templates Comparison</h2><br></div>
+    <!--
     </div>
     <div class="col-5" id="trackdetails"></div>
-
-
     </div>
+    -->
 
     <!-- JS Libraries -->
     <script src="//d3js.org/queue.v1.min.js"></script>

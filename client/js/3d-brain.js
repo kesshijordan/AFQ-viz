@@ -1,8 +1,8 @@
 //tracklist js
 
 //Data : track names
-var tracks=["Left Thalamic Radiation","Right Thalamic Radiation","Left Corticospinal","Right Corticospinal","Left Cingulum Cingulate","Right Cingulum Cingulate","Left Cingulum Hippocampus","Right Cingulum Hippocampus","Callosum Forceps Major","Callosum Forceps Minor","Left IFOF","Right IFOF","Left ILF","Right ILF","Left SLF","Right SLF","Left Uncinate","Right Uncinate","Left Arcuate","Right Arcuate"]
-
+console.log('huh?')
+var tracks=["NOTExpectingthisCluster 1","Cluster 2", "Cluster 3", "Cluster 4", "Cluster 5", "Cluster 6", "Cluster 7", "Cluster 8", "Cluster 9", "Cluster 10" ]
 // color Palettes in Hex format, HTML needs colors in d3colors format
 // colors are the Tableau20 colors
 var colors = [0x1F77B4, 0xAEC7E8, 0xFF7F0E, 0xFFBB78, 0x2CA02C, 0x98DF8A, 0xD62728, 0xFF9896, 0x9467BD, 0xC5B0D5, 0x8C564B, 0xC49C94, 0xE377C2, 0xF7B6D2, 0x7F7F7F, 0xC7C7C7, 0xBCBD22, 0xDBDB8D, 0x17BECF, 0x9EDAE5];
@@ -135,11 +135,14 @@ function init() {
 		})
 	});
 
+
     // contain all bundles in this Group object
     // each bundle is represented by an Object3D
     // load fiber bundle using jQuery
+    //example: Unc 0 and 1; IFOF 2 and 4
+    //example: Arc  3, 4, 5ish
 	var bundleIdx = 0;
-    $.getJSON("data/data_partial.json", function(json) {
+    $.getJSON("data/testingslfcpy.json", function(json) {
         for (var key in json) {
             if (json.hasOwnProperty(key)) {
                 var oneBundle = json[key];
@@ -177,7 +180,7 @@ function init() {
                 child.material.opacity = lineInitialOpacity;
                 child.material.transparent = true;
                 child.position.set(0, 0.8, -0.5);
-
+                // these are the LISTENERS that fire on an EVENT
                 domEvents.addEventListener(child, 'mouseover', function(event) {
         					if(!mouseDown) {
 								mouseoverBundle(child.idx);
@@ -187,6 +190,8 @@ function init() {
                 domEvents.addEventListener(child, 'mousemove', function(event) {
         					mouseMove = true;
         				});
+
+        		// this is a listener for the CLICK event:
                 domEvents.addEventListener(child, 'mousedown', function(event) {
         					mouseMove = false;
         				});
@@ -195,6 +200,8 @@ function init() {
         						var myBundle = d3.selectAll("input.tracks")[0][child.idx];
         						myBundle.checked = !myBundle.checked;
         						showHideTrackDetails(myBundle.checked, myBundle.name)
+        						// Lets say you want to hide the bundle on click -- try replacing
+        						// highlightBundle w/ a function that hides the bundle
         						highlightBundle(myBundle.checked, myBundle.name)
         						return renderer.render(scene, camera);
         					} else {
@@ -223,6 +230,24 @@ function init() {
     controls.addEventListener('change', lightUpdate);
 }
 
+//function to send a json object to the server from the client
+function onFinerButton() {
+	var myObject = { "my_key": "my_value" };
+
+	$.ajax({
+		type: "POST",
+		url: "/generate",
+		data: JSON.stringify(myObject),
+		contentType: 'application/json',
+		dataType: 'json',
+		error: function() {
+			alert("error");
+		},
+		success: function(data) {
+			console.log("success", data);
+		}
+	});}
+
 function onWindowResize() {
     var Width = container.clientWidth;
 
@@ -244,6 +269,12 @@ function lightUpdate() {
     directionalLight.position.copy(camera.position);
 }
 
+// func to load json file tracks into viewer
+function loadjsontrks(myjsonfile) {
+
+}
+
+
 // func to highlight specified bundle based on left panel checkboxes
 function highlightBundle(state, name) {
 
@@ -262,6 +293,37 @@ function highlightBundle(state, name) {
 			return renderer.render(scene, camera);
 
 		} else {
+			bundle.material = line_material;
+			return renderer.render(scene, camera);
+		}
+	}
+}
+
+// func to HIDE specified bundle based on left panel checkboxes
+function hideBundle(state, name) {
+
+	var tem_line_material = new THREE.LineBasicMaterial({
+		opacity: 0,
+		linewidth: 2.5,
+        transparent: true
+	});
+
+	var tem_line_material2 = new THREE.LineBasicMaterial({
+		opacity: 1,
+		linewidth: 2.5,
+        transparent: true
+	});
+
+	bundle = groups.children[name];
+
+	if (bundle !== undefined) {
+		if (state === true) {
+			tem_line_material.color.setHex( colors[name] );
+			bundle.material = tem_line_material;
+			return renderer.render(scene, camera);
+
+		} else {
+
 			bundle.material = line_material;
 			return renderer.render(scene, camera);
 		}
