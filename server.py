@@ -10,7 +10,7 @@ import os
 import numpy as np
 import nibabel as nib
 from dipy.segment.clustering import QuickBundles
-#from dipy.io.pickles import save_pickle
+from dipy.io.pickles import save_pickle
 
 def do_something(fromclient):
     fromserver = fromclient+'ibefromserver'
