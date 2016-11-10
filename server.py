@@ -3,7 +3,8 @@ __author__ = 'kjordan'
 import cherrypy
 from scipy.spatial import ConvexHull
 from scipy.optimize import minimize
-import json
+#import json
+import simplejson as json
 from glob import glob
 import os
 
@@ -60,7 +61,29 @@ def execute_savecsv(path, clusters):
     for i,cl in enumerate(clusters):
         mycsv.writerow([trkdir.split('/')[-1], len(clusters), i, len(cl)])
 
-def savejson(clusters, savepath, bigclthr=5):
+def savejsontrk(sls, savepath=None, bigclthr=5):
+    # Select one of these:
+    #streamline_idx = 20
+    streamline = list(clusters[0])
+    #json_streamline = json.dumps({streamline_idx:streamline.tolist()})
+    jump_step = 5
+    json_streamlines = {}
+    json_bundles = {}
+    # loop through all fibers
+    for bundle_idx in range(1):
+        bundle = sls
+        # loop through the selected bundle and put all lines into another variable
+        for streamline_idx in range(0, len(bundle), jump_step):
+            streamline = bundle[streamline_idx]
+            streamline = streamline[1::5]
+            json_streamlines[streamline_idx] = streamline.tolist()
+
+        # then put this fiber into bundles set
+        json_bundles[bundle_idx] = json_streamlines
+        # and refresh json_streamlines
+        json_streamlines = {}
+
+def savejson(clusters, savepath=None, bigclthr=5):
     clusters = clusters.get_large_clusters(bigclthr)
     # Select one of these:
     #streamline_idx = 20
@@ -85,8 +108,10 @@ def savejson(clusters, savepath, bigclthr=5):
 
     # print (len(json_bundles))
     # finally, write this bundles set into external file
-    with open(savepath, 'w') as outfile:
-        json.dump(json_bundles, outfile)
+    if not savepath == None:
+        with open(savepath, 'w') as outfile:
+            json.dump(json_bundles, outfile)
+    return json.dumps(json_bundles)
 
 def op_qbparams_func(streamlines, dmetric=50, clszthr=5):
     clusters = execute_qb(streamlines, dmetric)
@@ -118,11 +143,12 @@ def loadtrkfile(trkfile):
     sls = [item[0] for item in trk]
     return sls
 
-def executeclustering(trkfile, dist_metric=50, smcl=5):
-    sls = loadtrkfile(trkfile)
+def executeclustering(jsls, dist_metric=50, smcl=5):
+    sls = json.loads(jsls)
     csls = center_sls(sls)
     clusters = execute_qb(csls, dist_metric, smcl=5)
-    return clusters
+    jclusters = savejson(clusters)
+    return jclusters
 
 class HelloWorld(object):
     @cherrypy.expose
@@ -136,22 +162,25 @@ class HelloWorld(object):
         result = {"operation": "request", "result": "success"}
 
         trkpath = '/Users/kjordan/repos/AFQ-viz/client/data/test_SLF_L.trk'
-        clusters = executeclustering(trkpath, 35, 5)
+        jsls = savejsontrk(loadtrkfile(trkpath))
+        #clusters = executeclustering(trkpath, 35, 5)
         #savejson(clusters, '/Users/kjordan/repos/AFQ-viz/client/data/testingslfcpy.json', 15)
 
         input_json = cherrypy.request.json
         value = input_json #["my_key"]
-        value["my_key"] = 'this comes from client'
-        value["my_key"] = clusters
+        #value["my_key"] = 'this comes from client'
+        value["my_key"] = jsls
 
 
         #All responses are serialized to JSON. This the same as
         #return simplejson.dumps(result)
         #print("incoming data is", input_json)
-        input_json["new_thing"] = do_something(value["my_key"])
+        input_json["new_thing"] = executeclustering(value["my_key"])
         return input_json
 
 
 
 if __name__ == '__main__':
     cherrypy.quickstart(HelloWorld(), "/", "Hello.config")
+    cherrypy.config.update({'server.socket_port': 8080})
+    cherrypy.engine.restart()
