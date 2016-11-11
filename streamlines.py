@@ -56,8 +56,30 @@ def execute_savecsv(path, clusters):
     for i,cl in enumerate(clusters):
         mycsv.writerow([trkdir.split('/')[-1], len(clusters), i, len(cl)])
 
-def savejson(clusters, savepath, bigclthr=5):
-    clusters = clusters.get_large_clusters(bigclthr)
+def makejsontrk(streamline, bigclthr=5):
+    #clusters = clusters.get_large_clusters(bigclthr)
+    # Select one of these:
+    #streamline_idx = 20
+    #json_streamline = json.dumps({streamline_idx:streamline.tolist()})
+    jump_step = 5
+    json_streamlines = {}
+    json_bundles = {}
+    # loop through all fibers
+    for bundle_idx in range(0, 1):
+        bundle = streamline
+        # loop through the selected bundle and put all lines into another variable
+        for streamline_idx in range(0, len(bundle), jump_step):
+            streamline = bundle[streamline_idx]
+            streamline = streamline[1::5]
+            json_streamlines[streamline_idx] = streamline.tolist()
+        # then put this fiber into bundles set
+        json_bundles[bundle_idx] = json_streamlines
+        # and refresh json_streamlines
+        json_streamlines = {}
+    return json_bundles
+
+def makejsonclusters(clusters, bigclthr=5):
+    #clusters = clusters.get_large_clusters(bigclthr)
     # Select one of these:
     #streamline_idx = 20
     streamline = list(clusters[0])
@@ -81,8 +103,9 @@ def savejson(clusters, savepath, bigclthr=5):
 
     # print (len(json_bundles))
     # finally, write this bundles set into external file
-    with open(savepath, 'w') as outfile:
-        json.dump(json_bundles, outfile)
+    #with open(savepath, 'w') as outfile:
+    #    json.dump(json_bundles, outfile)
+    return json_bundles
 
 def op_qbparams_func(streamlines, dmetric=50, clszthr=5):
     clusters = execute_qb(streamlines, dmetric)
@@ -114,8 +137,7 @@ def loadtrkfile(trkfile):
     sls = [item[0] for item in trk]
     return sls
 
-def executeclustering(trkfile, dist_metric=50, smcl=5):
-    sls = loadtrkfile(trkfile)
+def executeclustering(sls, dist_metric=50, smcl=5):
     csls = center_sls(sls)
     clusters = execute_qb(csls, dist_metric, smcl=5)
     return clusters
