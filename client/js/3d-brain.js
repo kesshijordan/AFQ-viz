@@ -175,8 +175,12 @@ function init() {
                 groups.add(bundleLine);
             }
         }
-
+        console.log('groups before traverse')
+		console.log(groups)
         groups.traverse(function (child) {
+        	console.log('child')
+        	console.log(child)
+        	console.log('child over')
 			if (child instanceof THREE.LineSegments) {
                 child.material.opacity = lineInitialOpacity;
                 child.material.transparent = true;
@@ -290,8 +294,12 @@ function onFinerButton() {
                 console.log('just printed groups 2')
             }
         }
-
+		console.log('button groups following')
+		console.log(groups)
+		console.log('button pre transverse')
         groups.traverse(function (child) {
+        	console.log('button child post transverse')
+        	console.log(child)
         	var lineInitialOpacity = 0.3; // TODO: HOW DO I GET THIS FROM THE INIT INTO ONFINERBUTTON????
 			if (child instanceof THREE.LineSegments) {
                 child.material.opacity = lineInitialOpacity;
@@ -339,6 +347,7 @@ function onFinerButton() {
 
 		}
 	})
+	//TESTING KESH
 	window.addEventListener('resize', onWindowResize, false);
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.addEventListener('change', lightUpdate);
