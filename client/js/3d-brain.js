@@ -28,6 +28,7 @@ var brain;
 var lh, rh;
 
 var groups = new THREE.Object3D();
+groups.name='keshbundles'
 var line_material = new THREE.LineBasicMaterial({
 	linewidth: 1.5
 });
@@ -142,7 +143,7 @@ function init() {
     //example: Unc 0 and 1; IFOF 2 and 4
     //example: Arc  3, 4, 5ish
 	var bundleIdx = 0;
-    $.getJSON("data/testingslfcpy.json", function(json) {
+    $.getJSON("data/slf_L_tier_0.json", function(json) {
         for (var key in json) {
             if (json.hasOwnProperty(key)) {
                 var oneBundle = json[key];
@@ -174,13 +175,165 @@ function init() {
                 groups.add(bundleLine);
             }
         }
+        console.log('groups before traverse')
+		console.log(groups)
+
+		unregister_list = []
+		function register_event_listener(mesh, event_name, callback) {
+		domEvents.addEventListener(mesh, event_name, callback)
+		unregister_list.push(function (){domEvents.removeEventListener(mesh, event_name, callback)}) //append
+		}
 
         groups.traverse(function (child) {
+        	console.log('child')
+        	console.log(child)
+        	console.log('child over')
 			if (child instanceof THREE.LineSegments) {
+				console.log('IFFING round 1')
+				console.log(child)
                 child.material.opacity = lineInitialOpacity;
                 child.material.transparent = true;
                 child.position.set(0, 0.8, -0.5);
                 // these are the LISTENERS that fire on an EVENT
+                register_event_listener(child, 'mouseover', function(event) {
+        					if(!mouseDown) {
+								mouseoverBundle(child.idx);
+        						return renderer.render(scene, camera);
+        					}
+                });
+                register_event_listener(child, 'mousemove', function(event) {
+        					mouseMove = true;
+        				});
+
+        		// this is a listener for the CLICK event:
+                register_event_listener(child, 'mousedown', function(event) {
+        					mouseMove = false;
+        				});
+        				register_event_listener(child, 'mouseup', function(event) {
+        					if(!mouseMove) {
+        						var myBundle = d3.selectAll("input.tracks")[0][child.idx];
+        						myBundle.checked = !myBundle.checked;
+        						showHideTrackDetails(myBundle.checked, myBundle.name)
+        						// Lets say you want to hide the bundle on click -- try replacing
+        						// highlightBundle w/ a function that hides the bundle
+        						highlightBundle(myBundle.checked, myBundle.name)
+        						return renderer.render(scene, camera);
+        					} else {
+        						mouseMove = false;
+        					}
+                });
+                register_event_listener(child, 'mouseout', function(event) {
+        					var myBundle = d3.selectAll("input.tracks")[0][child.idx];
+        					showHideTrackDetails(myBundle.checked, myBundle.name)
+        					highlightBundle(myBundle.checked, myBundle.name)
+        					return renderer.render(scene, camera);
+                });
+            }
+            else{
+            console.log('ELSEING')
+            console.log(child)
+            }
+        });
+
+  		scene.add(groups);
+    });
+
+	if (showStats ) {
+		stats = new Stats();
+		container.appendChild( stats.dom );
+	}
+
+    window.addEventListener('resize', onWindowResize, false);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.addEventListener('change', lightUpdate);
+}
+
+//function to send a json object to the server from the client
+function onFinerButton() {
+	var myObject = { "my_key": "my_value" }; //hardcoded object record status of all bundles
+
+	$.ajax({
+		type: "POST",
+		url: "/generate",
+		data: JSON.stringify(myObject), //doing something to object (sending it to server.py)
+		contentType: 'application/json',
+		dataType: 'json',
+		error: function() {
+			alert("error");
+		},
+		//success: function(data) {
+		//	console.log("success", data);
+		//}
+		success: function(json) {
+
+		console.log('removing groups.children')
+		//var selectedObject = scene.getObjectByName(object.name);
+    	scene.remove(scene.getObjectByName(groups.name));
+    	unregister_list.forEach(function (F){F()})
+    	unregister_list = []
+		//scene.remove(groups.children)
+		console.log(groups)
+		console.log('just printed groups 1')
+		console.log('adding bundleLine new')
+		groups = new THREE.Object3D();
+		groups.name='keshbundles_new'
+
+		var bundleIdx = 0
+      	for (var key in json) {
+            if (json.hasOwnProperty(key)) {
+                var oneBundle = json[key];
+                console.log("KEY")
+                console.log(key)
+                console.log('json')
+                console.log(json[key])
+				var combined = new THREE.Geometry();
+
+                for (var subkey in oneBundle) {
+                    if (oneBundle.hasOwnProperty(subkey)) {
+						var geometry = new THREE.Geometry();
+                        var oneStreamLine = oneBundle[subkey];
+
+                        // draw this stream line in scene
+                        for (var i = 0; i < oneStreamLine.length - 1; i++) {
+                            geometry.vertices.push(new THREE.Vector3(oneStreamLine[i][0], oneStreamLine[i][1], oneStreamLine[i][2]));
+                            geometry.vertices.push(new THREE.Vector3(oneStreamLine[i+1][0], oneStreamLine[i+1][1], oneStreamLine[i+1][2]));
+                        }
+
+						var line = new THREE.LineSegments(geometry, line_material);
+
+						combined.merge(line.geometry, line.matrix);
+                    }
+                }
+				var bundleLine = new THREE.LineSegments(combined, line_material);
+				bundleLine.scale.set(0.05,0.05,0.05);
+
+				bundleLine.name = tracks[ key ];
+				bundleLine.idx = bundleIdx;
+				++bundleIdx;
+
+				groups.add(bundleLine)
+
+            }
+        }
+
+		console.log('button pre transverse')
+
+        groups.traverse(function (child) {
+        	console.log('button child')
+        	console.log(child)
+        	console.log('button child over')
+        	var lineInitialOpacity = 0.3; // TODO: HOW DO I GET THIS FROM THE INIT INTO ONFINERBUTTON????
+			if (child instanceof THREE.LineSegments) {
+				console.log('IFFING')
+				console.log(child)
+                child.material.opacity = lineInitialOpacity;
+                child.material.transparent = true;
+                child.position.set(0, 0.8, -0.5);
+                // these are the LISTENERS that fire on an EVENT
+                console.log('dom event pre')
+                console.log(domEvents)
+
+                //domEvents = new THREEx.DomEvents(camera, renderer.domElement); //KESHTEST
                 domEvents.addEventListener(child, 'mouseover', function(event) {
         					if(!mouseDown) {
 								mouseoverBundle(child.idx);
@@ -215,72 +368,22 @@ function init() {
         					return renderer.render(scene, camera);
                 });
             }
+            else{
+            console.log('ELSEING')
+            console.log(child)
+            console.log("done elseing")}
         });
 
-  		scene.add(groups);
-    });
+		//scene.remove(groups.children)
+  		scene.add(groups); //UNCOMMENT THIS
 
-	if (showStats ) {
-		stats = new Stats();
-		container.appendChild( stats.dom );
-	}
-
-    window.addEventListener('resize', onWindowResize, false);
+		}
+	})
+	//TESTING KESH
+	window.addEventListener('resize', onWindowResize, false);
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.addEventListener('change', lightUpdate);
 }
-
-//function to send a json object to the server from the client
-function onFinerButton() {
-	var myObject = { "my_key": "my_value" };
-
-	$.ajax({
-		type: "POST",
-		url: "/generate",
-		data: JSON.stringify(myObject),
-		contentType: 'application/json',
-		dataType: 'json',
-		error: function() {
-			alert("error");
-		},
-		//success: function(data) {
-		//	console.log("success", data);
-		//}
-		success: function(json) {
-      /*  for (var key in json) {
-            if (json.hasOwnProperty(key)) {
-                var oneBundle = json[key];
-				var combined = new THREE.Geometry();
-
-                for (var subkey in oneBundle) {
-                    if (oneBundle.hasOwnProperty(subkey)) {
-						var geometry = new THREE.Geometry();
-                        var oneStreamLine = oneBundle[subkey];
-
-                        // draw this stream line in scene
-                        for (var i = 0; i < oneStreamLine.length - 1; i++) {
-                            geometry.vertices.push(new THREE.Vector3(oneStreamLine[i][0], oneStreamLine[i][1], oneStreamLine[i][2]));
-                            geometry.vertices.push(new THREE.Vector3(oneStreamLine[i+1][0], oneStreamLine[i+1][1], oneStreamLine[i+1][2]));
-                        }
-
-						var line = new THREE.LineSegments(geometry, line_material);
-
-						combined.merge(line.geometry, line.matrix);
-                    }
-                }
-				var bundleLine = new THREE.LineSegments(combined, line_material);
-				bundleLine.scale.set(0.05,0.05,0.05);
-
-				bundleLine.name = tracks[ bundleIdx ];
-				bundleLine.idx = bundleIdx;
-				++bundleIdx;
-
-                groups.add(bundleLine);
-            }
-        }
-			*/
-			console.log("success")
-}})}
 
 function onWindowResize() {
     var Width = container.clientWidth;
@@ -303,10 +406,6 @@ function lightUpdate() {
     directionalLight.position.copy(camera.position);
 }
 
-// func to load json file tracks into viewer
-function loadjsontrks(myjsonfile) {
-
-}
 
 
 // func to highlight specified bundle based on left panel checkboxes
