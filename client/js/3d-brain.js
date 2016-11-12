@@ -237,16 +237,26 @@ function init() {
     controls.addEventListener('change', lightUpdate);
 }
 
+var iter = 0
+var dmetric = 50
+var qbclusters = []
+
 //function to send a json object to the server from the client
 function onFinerButton() {
 	console.log('ARE THESE THE TRACKS???')
-	var myObject = []
+	trkStatus = []
 	for (var i = 0; i <=9; i++){
-		myObject.push(d3.selectAll("input.tracks")[0][i].checked)
+		trkStatus.push(d3.selectAll("input.tracks")[0][i].checked)
 	}
-	console.log(myObject)
+	console.log(trkStatus)
 	console.log('END')
 	//var myObject = { "my_key": "my_value" }; //hardcoded object record status of all bundles
+	console.log('iter')
+	console.log(iter)
+	console.log('dmet')
+	console.log(dmetric)
+
+	var myObject = {"track_status" : trkStatus, "iteration" : iter, "distance_metric" : dmetric}
 
 	$.ajax({
 		type: "POST",
@@ -260,7 +270,20 @@ function onFinerButton() {
 		//success: function(data) {
 		//	console.log("success", data);
 		//}
-		success: function(json) {
+
+
+
+		success: function(got_this) {
+
+		iter = got_this['iteration']
+		dmetric = got_this['distance_metric']
+		json = got_this['clustered_sls']
+		qbclusters = got_this['qbclusters']
+
+		console.log('START TEST ITER DMET JSON')
+		console.log(iter)
+		console.log(dmetric)
+		console.log('END')
 
 		//var selectedObject = scene.getObjectByName(object.name);
     	scene.remove(scene.getObjectByName(groups.name));
