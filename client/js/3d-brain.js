@@ -189,6 +189,8 @@ function init() {
         	console.log(child)
         	console.log('child over')
 			if (child instanceof THREE.LineSegments) {
+				console.log('IFFING round 1')
+				console.log(child)
                 child.material.opacity = lineInitialOpacity;
                 child.material.transparent = true;
                 child.position.set(0, 0.8, -0.5);
@@ -227,6 +229,10 @@ function init() {
         					return renderer.render(scene, camera);
                 });
             }
+            else{
+            console.log('ELSEING')
+            console.log(child)
+            }
         });
 
   		scene.add(groups);
@@ -259,12 +265,27 @@ function onFinerButton() {
 		//	console.log("success", data);
 		//}
 		success: function(json) {
+
+		console.log('removing groups.children')
+		//var selectedObject = scene.getObjectByName(object.name);
+    	scene.remove(scene.getObjectByName(groups.name));
+    	unregister_list.forEach(function (F){F()})
+    	unregister_list = []
+		//scene.remove(groups.children)
+		console.log(groups)
+		console.log('just printed groups 1')
+		console.log('adding bundleLine new')
+		groups = new THREE.Object3D();
+		groups.name='keshbundles_new'
+
 		var bundleIdx = 0
       	for (var key in json) {
             if (json.hasOwnProperty(key)) {
                 var oneBundle = json[key];
                 console.log("KEY")
                 console.log(key)
+                console.log('json')
+                console.log(json[key])
 				var combined = new THREE.Geometry();
 
                 for (var subkey in oneBundle) {
@@ -290,31 +311,17 @@ function onFinerButton() {
 				bundleLine.idx = bundleIdx;
 				++bundleIdx;
 
+				groups.add(bundleLine)
+
             }
         }
 
-
-        console.log('removing groups.children')
-		//var selectedObject = scene.getObjectByName(object.name);
-    	scene.remove(scene.getObjectByName(groups.name));
-    	unregister_list.forEach(function (F){F()})
-    	unregister_list = []
-		//scene.remove(groups.children)
-		console.log(groups)
-		console.log('just printed groups 1')
-		console.log('adding bundleLine new')
-		groups = new THREE.Object3D();
-		groups.name='keshbundles_new'
-        groups.add(bundleLine);
-        console.log(groups)
-        console.log('just printed groups 2')
-		console.log('button groups following')
-		console.log(groups)
 		console.log('button pre transverse')
 
         groups.traverse(function (child) {
-        	console.log('button child post transverse')
+        	console.log('button child')
         	console.log(child)
+        	console.log('button child over')
         	var lineInitialOpacity = 0.3; // TODO: HOW DO I GET THIS FROM THE INIT INTO ONFINERBUTTON????
 			if (child instanceof THREE.LineSegments) {
 				console.log('IFFING')

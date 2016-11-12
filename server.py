@@ -20,7 +20,7 @@ class HelloWorld(object):
         trkpath = '/Users/kjordan/repos/AFQ-viz/client/data/test_ExCap_L.trk'
         sls = loadtrkfile(trkpath)
         jsls = makejsontrk(sls)
-        clusters = executeclustering(sls)
+        clusters = executeclustering(sls, dist_metric=50)
         jcsls = makejsonclusters(clusters)
         #clusters = executeclustering(trkpath, 35, 5)
         #savejson(clusters, '/Users/kjordan/repos/AFQ-viz/client/data/testingslfcpy.json', 15)
