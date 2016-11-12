@@ -243,8 +243,23 @@ var qbclusters = []
 
 // make a load button
 $("#the-file-input").change(function() {
-    // will log a FileList object, view gifs below
+    // will log a FileList object
     console.log(this.files);
+    var myObject = {"kesh-testing" : 'did this go through???'}
+
+	$.ajax({
+		type: "POST",
+		url: "/generate_load",
+		data: JSON.stringify(myObject), //doing something to object (sending it to server.py)
+		contentType: 'application/json',
+		dataType: 'json',
+		error: function() {
+			alert("error");
+		},
+		success: function(data) {
+			console.log("success", data);
+		}
+	});
 });
 
 //make a save button
