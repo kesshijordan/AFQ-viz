@@ -245,7 +245,8 @@ var qbclusters = []
 $("#the-file-input").change(function() {
     // will log a FileList object
     console.log(this.files);
-    var myObject = {"kesh-testing" : 'did this go through???'}
+    console.log(this.files[0].name)
+    var myObject = {"myfile" : this.files[0].name}
 
 	$.ajax({
 		type: "POST",

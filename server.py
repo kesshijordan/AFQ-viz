@@ -72,6 +72,18 @@ class HelloWorld(object):
         #input_json["new_thing"] = executeclustering(value["my_key"])
         return output_json
 
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    def generate_load(self):
+        result = {"operation": "request", "result": "success"}
+        input_json = cherrypy.request.json  #this is the user information
+        print("Generate_load executed")
+        trkpath = input_json["myfile"]
+        print(trkpath)
+        #trk,hdr = nib.trackvis.read(trkpath)
+        #print(hdr)
+        return input_json
 
 
 if __name__ == '__main__':
