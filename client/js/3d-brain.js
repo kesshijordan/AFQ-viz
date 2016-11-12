@@ -175,8 +175,6 @@ function init() {
                 groups.add(bundleLine);
             }
         }
-        console.log('groups before traverse')
-		console.log(groups)
 
 		unregister_list = []
 		function register_event_listener(mesh, event_name, callback) {
@@ -185,12 +183,7 @@ function init() {
 		}
 
         groups.traverse(function (child) {
-        	console.log('child')
-        	console.log(child)
-        	console.log('child over')
 			if (child instanceof THREE.LineSegments) {
-				console.log('IFFING round 1')
-				console.log(child)
                 child.material.opacity = lineInitialOpacity;
                 child.material.transparent = true;
                 child.position.set(0, 0.8, -0.5);
@@ -229,10 +222,6 @@ function init() {
         					return renderer.render(scene, camera);
                 });
             }
-            else{
-            console.log('ELSEING')
-            console.log(child)
-            }
         });
 
   		scene.add(groups);
@@ -250,7 +239,14 @@ function init() {
 
 //function to send a json object to the server from the client
 function onFinerButton() {
-	var myObject = { "my_key": "my_value" }; //hardcoded object record status of all bundles
+	console.log('ARE THESE THE TRACKS???')
+	var myObject = []
+	for (var i = 0; i <=9; i++){
+		myObject.push(d3.selectAll("input.tracks")[0][i].checked)
+	}
+	console.log(myObject)
+	console.log('END')
+	//var myObject = { "my_key": "my_value" }; //hardcoded object record status of all bundles
 
 	$.ajax({
 		type: "POST",
@@ -266,15 +262,11 @@ function onFinerButton() {
 		//}
 		success: function(json) {
 
-		console.log('removing groups.children')
 		//var selectedObject = scene.getObjectByName(object.name);
     	scene.remove(scene.getObjectByName(groups.name));
     	unregister_list.forEach(function (F){F()})
     	unregister_list = []
 		//scene.remove(groups.children)
-		console.log(groups)
-		console.log('just printed groups 1')
-		console.log('adding bundleLine new')
 		groups = new THREE.Object3D();
 		groups.name='keshbundles_new'
 
@@ -284,8 +276,6 @@ function onFinerButton() {
                 var oneBundle = json[key];
                 console.log("KEY")
                 console.log(key)
-                console.log('json')
-                console.log(json[key])
 				var combined = new THREE.Geometry();
 
                 for (var subkey in oneBundle) {
@@ -316,22 +306,14 @@ function onFinerButton() {
             }
         }
 
-		console.log('button pre transverse')
 
         groups.traverse(function (child) {
-        	console.log('button child')
-        	console.log(child)
-        	console.log('button child over')
         	var lineInitialOpacity = 0.3; // TODO: HOW DO I GET THIS FROM THE INIT INTO ONFINERBUTTON????
 			if (child instanceof THREE.LineSegments) {
-				console.log('IFFING')
-				console.log(child)
                 child.material.opacity = lineInitialOpacity;
                 child.material.transparent = true;
                 child.position.set(0, 0.8, -0.5);
                 // these are the LISTENERS that fire on an EVENT
-                console.log('dom event pre')
-                console.log(domEvents)
 
                 //domEvents = new THREEx.DomEvents(camera, renderer.domElement); //KESHTEST
                 domEvents.addEventListener(child, 'mouseover', function(event) {
@@ -368,10 +350,6 @@ function onFinerButton() {
         					return renderer.render(scene, camera);
                 });
             }
-            else{
-            console.log('ELSEING')
-            console.log(child)
-            console.log("done elseing")}
         });
 
 		//scene.remove(groups.children)
