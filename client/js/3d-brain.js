@@ -241,6 +241,20 @@ var iter = 0
 var dmetric = 50
 var qbclusters = []
 
+// make a load button
+$("#the-file-input").change(function() {
+    // will log a FileList object, view gifs below
+    console.log(this.files);
+});
+
+//make a save button
+function download(text, name, type) {
+  var a = document.getElementById("a");
+  var file = new Blob([text], {type: type});
+  a.href = URL.createObjectURL(file);
+  a.download = name;
+}
+
 //function to send a json object to the server from the client
 function onFinerButton() {
 	console.log('ARE THESE THE TRACKS???')

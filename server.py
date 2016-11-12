@@ -23,7 +23,7 @@ class HelloWorld(object):
         trkpath = '/Users/kjordan/repos/AFQ-viz/client/data/test_ExCap_L.trk'
         osls = loadtrkfile(trkpath)
         #ojsls = makejsontrk(osls)
-        oclusters = executeclustering(osls, 35, 5)
+        oclusters = executeclustering(osls, 50, 5)
         #savejson(clusters, '/Users/kjordan/repos/AFQ-viz/client/data/testingslfcpy.json', 15)
         #makejsonclusters(clusters)
         input_json = cherrypy.request.json  #this is the user information
@@ -46,9 +46,10 @@ class HelloWorld(object):
         sls = []
         for i,t in enumerate(tstat):
             if t:
-                print(i)
+                print("I = "+str(i))
                 print(t)
                 print "LENCL"
+                print(clusters[i])
                 print(len(list(clusters[i])))
                 for p,k in enumerate(list(clusters[i])):
                     sls.append(k)

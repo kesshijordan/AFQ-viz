@@ -30,8 +30,11 @@ def center_sls(streamlines):
     return newsls
 
 def execute_qb(streamlines, dist_metric, smcl=5):
+    print('argrrrg1')
     qb = QuickBundles(threshold=dist_metric)
+    print('arrrggg2')
     clusters = qb.cluster(streamlines)
+    print('arrrrg3')
     print("Nb. clusters:", len(clusters))
     print("Cluster sizes:", map(len, clusters))
     print("N Small clusters:", sum(clusters < smcl))

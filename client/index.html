@@ -4,7 +4,7 @@
     <!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta charset="utf-8">
-    <title>Cluster Cleaning NHW 2016</title>
+    <title>Cluster Cleaning BrainHack LA 2016</title>
 
     <!-- FONT
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -19,7 +19,7 @@
 <body id="body">
 
     <div id="header">
-        <h1 style="color:white;">NHW 2016 Cluster Cleaning</h1>
+        <h1 style="color:white;">Brainhack LA 2016 Cluster Cleaning</h1>
     </div>
 
     <div class="col-7">
@@ -37,10 +37,11 @@
         <div>
             <button type="button" onclick="onFinerButton()"> FINER </button>
             <button type="button" onclick="showClusterresCoarser()"> COARSER </button>
+            <input type="file" id="the-file-input"> LOAD </input>
         <div/>
         <div class="col-10" id="title">
-            <button type="button" onclick=document.getElementById('modelsaveconfirm').style.display='block'> __SAVE_FASCICLE MODEL__ </button>
-            <p id="modelsaveconfirm" style="display:none">__Fascicle model saved!</p>
+            <a href="" id="a">click here to download your file</a>
+            <button onclick="download('file text', 'myfilename.txt', 'text/plain')">Create file</button>
         </div>
 
         <div class="col-8">
