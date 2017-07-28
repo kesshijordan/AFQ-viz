@@ -1,3 +1,1 @@
-3D Brain
-
-to be made into node module
+Cluster-viz is a web-based viewer for manual quality-control/"cleaning" of fascicle models produced by tractography. The idea is to select inclusion/exclusion bundles using a fast clustering algorithm (Quickbundles by Garyfallidis et al.) to iteratively cluster the streamline dataset into progressively finer sub-bundles. This is an in-progress hackathon project started at Neurohackweek 2016. See the project report (https://doi.org/10.3897/rio.3.e12394) for more information.
